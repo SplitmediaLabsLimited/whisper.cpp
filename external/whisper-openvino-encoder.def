@@ -1,0 +1,4 @@
+EXPORTS
+  whisper_openvino_init PRIVATE
+  whisper_openvino_free PRIVATE
+  whisper_openvino_encode PRIVATE

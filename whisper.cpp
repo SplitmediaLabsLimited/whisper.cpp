@@ -1204,6 +1204,7 @@ static ggml_backend_t whisper_backend_init(const whisper_context_params & params
 
     // initialize the backends
 #ifdef GGML_USE_CUDA
+	IF_CUBLAS
     if (params.use_gpu) {
         WHISPER_LOG_INFO("%s: using CUDA backend\n", __func__);
         backend_gpu = ggml_backend_cuda_init(params.gpu_device);

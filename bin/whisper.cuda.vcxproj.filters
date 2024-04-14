@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="..\ggml-cuda\acc.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\alibi.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\arange.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\argsort.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\binbcast.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\clamp.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\concat.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\convert.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\cpy.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\diagmask.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\dmmv.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\getrows.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\im2col.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\mmq.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\mmvq.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\norm.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\pad.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\pool2d.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\quantize.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\rope.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\scale.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\softmax.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\sumrows.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\tsembd.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\unary.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\upscale.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\external\whisper.clblast.cpp" />
+    <ClCompile Include="..\external\whisper.cuda.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ggml-cuda\vecdotq.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\acc.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\alibi.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\arange.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\argsort.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\binbcast.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\clamp.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\common.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\concat.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\convert.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\cpy.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\dequantize.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\diagmask.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\dmmv.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\getrows.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda.h">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\im2col.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\mmq.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\mmvq.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\norm.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\pad.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\pool2d.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\quantize.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\rope.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\scale.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\softmax.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\sumrows.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\tsembd.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\unary.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\upscale.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\external\whisper-cuda.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ggml-cuda">
+      <UniqueIdentifier>{3190fcf4-b34b-40a1-9150-4a45f175608f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

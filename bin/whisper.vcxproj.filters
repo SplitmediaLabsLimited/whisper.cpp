@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\whisper.cpp" />
+    <ClCompile Include="..\ggml.c">
+      <Filter>ggml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ggml-alloc.c">
+      <Filter>ggml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ggml-backend.c">
+      <Filter>ggml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ggml-quants.c">
+      <Filter>ggml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\external\base.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\whisper.h" />
+    <ClInclude Include="..\ggml-backend.h">
+      <Filter>ggml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml.h">
+      <Filter>ggml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-alloc.h">
+      <Filter>ggml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-quants.h">
+      <Filter>ggml</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ggml">
+      <UniqueIdentifier>{6EEB769A-D831-369C-875E-A259D60EB937}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

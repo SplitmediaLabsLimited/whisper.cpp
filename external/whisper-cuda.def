@@ -1,0 +1,19 @@
+EXPORTS
+
+;ggml_init_cublas PRIVATE
+;ggml_cublas_loaded PRIVATE
+;ggml_cuda_host_malloc PRIVATE
+;ggml_cuda_host_free PRIVATE
+;ggml_cuda_can_mul_mat PRIVATE
+;ggml_cuda_compute_forward PRIVATE
+;ggml_cuda_get_device_count PRIVATE
+;ggml_cuda_get_device_description PRIVATE
+ggml_backend_cuda_init PRIVATE
+ggml_backend_is_cuda PRIVATE
+ggml_backend_cuda_buffer_type PRIVATE
+ggml_backend_cuda_split_buffer_type PRIVATE
+ggml_backend_cuda_host_buffer_type PRIVATE
+ggml_backend_cuda_get_device_count PRIVATE
+ggml_backend_cuda_get_device_description PRIVATE
+ggml_backend_cuda_get_device_memory PRIVATE
+ggml_backend_cuda_reg_devices PRIVATE

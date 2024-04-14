@@ -1,13 +1,12 @@
 #include "common.h"
 
 #include "whisper.h"
-#include "grammar-parser.h"
 #include "external/base.h"
+#include "../ggml-cuda.h"
 
 #include <cmath>
 #include <fstream>
 #include <cstdio>
-#include <regex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -41,10 +40,9 @@ struct whisper_params {
     int32_t beam_size     = whisper_full_default_params(WHISPER_SAMPLING_BEAM_SEARCH).beam_search.beam_size;
     int32_t audio_ctx     = 0;
 
-    float word_thold      =  0.01f;
-    float entropy_thold   =  2.40f;
-    float logprob_thold   = -1.00f;
-    float grammar_penalty = 100.0f;
+    float word_thold    =  0.01f;
+    float entropy_thold =  2.40f;
+    float logprob_thold = -1.00f;
 
     bool speed_up        = false;
     bool debug_mode      = false;
@@ -77,14 +75,9 @@ struct whisper_params {
     std::string prompt;
     std::string font_path = "/System/Library/Fonts/Supplemental/Courier New Bold.ttf";
     std::string model     = "models/ggml-base.en.bin";
-    std::string grammar;
-    std::string grammar_rule;
 
     // [TDRZ] speaker turn string
     std::string tdrz_speaker_turn = " [SPEAKER_TURN]"; // TODO: set from command line
-
-    // A regular expression that matches tokens to suppress
-    std::string suppress_regex;
 
     std::string openvino_encode_device = "CPU";
 
@@ -92,8 +85,6 @@ struct whisper_params {
 
     std::vector<std::string> fname_inp = {};
     std::vector<std::string> fname_out = {};
-
-    grammar_parser::parse_state grammar_parsed;
 };
 
 void whisper_print_usage(int argc, char ** argv, const whisper_params & params);
@@ -168,10 +159,6 @@ bool whisper_params_parse(int argc, char ** argv, whisper_params & params) {
         else if (arg == "-dtw"  || arg == "--dtw")             { params.dtw             = argv[++i]; }
         else if (arg == "-ls"   || arg == "--log-score")       { params.log_score       = true; }
         else if (arg == "-ng"   || arg == "--no-gpu")          { params.use_gpu         = false; }
-        else if (                  arg == "--suppress-regex")  { params.suppress_regex = argv[++i]; }
-        else if (                  arg == "--grammar")         { params.grammar         = argv[++i]; }
-        else if (                  arg == "--grammar-rule")    { params.grammar_rule    = argv[++i]; }
-        else if (                  arg == "--grammar-penalty") { params.grammar_penalty = std::stof(argv[++i]); }
 		else if (arg == "-nov"  || arg == "--no-openvino")     { params.openvino        = false; }
 		else if (arg == "-cuda" || arg == "--use-cuda")        { params.use_cuda        = true; }
 		else if (arg == "-ocl"  || arg == "--opencl")          { params.use_opencl      = true; }
@@ -228,17 +215,13 @@ void whisper_print_usage(int /*argc*/, char ** argv, const whisper_params & para
     fprintf(stderr, "  -nt,       --no-timestamps     [%-7s] do not print timestamps\n",                        params.no_timestamps ? "true" : "false");
     fprintf(stderr, "  -l LANG,   --language LANG     [%-7s] spoken language ('auto' for auto-detect)\n",       params.language.c_str());
     fprintf(stderr, "  -dl,       --detect-language   [%-7s] exit after automatically detecting language\n",    params.detect_language ? "true" : "false");
-    fprintf(stderr, "             --prompt PROMPT     [%-7s] initial prompt (max n_text_ctx/2 tokens)\n",       params.prompt.c_str());
+    fprintf(stderr, "             --prompt PROMPT     [%-7s] initial prompt\n",                                 params.prompt.c_str());
     fprintf(stderr, "  -m FNAME,  --model FNAME       [%-7s] model path\n",                                     params.model.c_str());
     fprintf(stderr, "  -f FNAME,  --file FNAME        [%-7s] input WAV file path\n",                            "");
     fprintf(stderr, "  -oved D,   --ov-e-device DNAME [%-7s] the OpenVINO device used for encode inference\n",  params.openvino_encode_device.c_str());
     fprintf(stderr, "  -dtw MODEL --dtw MODEL         [%-7s] compute token-level timestamps\n",                 params.dtw.c_str());
     fprintf(stderr, "  -ls,       --log-score         [%-7s] log best decoder scores of tokens\n",              params.log_score?"true":"false");
     fprintf(stderr, "  -ng,       --no-gpu            [%-7s] disable GPU\n",                                    params.use_gpu ? "false" : "true");
-    fprintf(stderr, "  --suppress-regex REGEX         [%-7s] regular expression matching tokens to suppress\n", params.suppress_regex.c_str());
-    fprintf(stderr, "  --grammar GRAMMAR              [%-7s] GBNF grammar to guide decoding\n",                 params.grammar.c_str());
-    fprintf(stderr, "  --grammar-rule RULE            [%-7s] top-level GBNF grammar rule name\n",               params.grammar_rule.c_str());
-    fprintf(stderr, "  --grammar-penalty N            [%-7.1f] scales down logits of nongrammar tokens\n",      params.grammar_penalty);
 	fprintf(stderr, "  -nov,       --no-openvino      [%-7s] disable OpenVINO\n",                               params.openvino ? "false" : "true");
 	fprintf(stderr, "  -cuda,      --use-cuda         [%-7s] use CUDA\n",                                       params.use_cuda ? "false" : "true");
 	fprintf(stderr, "  -ocl,       --opencl           [%-7s] use OpenCL\n",                                     params.use_opencl ? "false" : "true");
@@ -877,35 +860,6 @@ void cb_log_disable(enum ggml_log_level , const char * , void * ) { }
 int main(int argc, char ** argv) {
     whisper_params params;
 
-    // If the only argument starts with "@", read arguments line-by-line
-    // from the given file.
-    std::vector<std::string> vec_args;
-    if (argc == 2 && argv != nullptr && argv[1] != nullptr && argv[1][0] == '@') {
-        // Save the name of the executable.
-        vec_args.push_back(argv[0]);
-
-        // Open the response file.
-        char const * rspfile = argv[1] + sizeof(char);
-        std::ifstream fin(rspfile);
-        if (fin.is_open() == false) {
-            fprintf(stderr, "error: response file '%s' not found\n", rspfile);
-            return 1;
-        }
-
-        // Read the entire response file.
-        std::string line;
-        while (std::getline(fin, line)) {
-            vec_args.push_back(line);
-        }
-
-        // Use the contents of the response file as the command-line arguments.
-        argc = static_cast<int>(vec_args.size());
-        argv = static_cast<char **>(alloca(argc * sizeof (char *)));
-        for (int i = 0; i < argc; ++i) {
-            argv[i] = const_cast<char *>(vec_args[i].c_str());
-        }
-    }
-
     if (whisper_params_parse(argc, argv, params) == false) {
         whisper_print_usage(argc, argv, params);
         return 1;
@@ -946,14 +900,13 @@ int main(int argc, char ** argv) {
         whisper_log_set(cb_log_disable, NULL);
     }
 
+    // whisper init
+
 	if (params.use_cuda) {
 		s_ggmlBackendType |= GGML_BACKEND_CUBLAST;
 	} else if (params.use_opencl) {
 		s_ggmlBackendType |= GGML_BACKEND_CLBLAST;
 	} 
-
-    // whisper init
-
     struct whisper_context_params cparams = whisper_context_default_params();
     cparams.use_gpu = params.use_gpu | params.use_cuda;
 
@@ -986,33 +939,11 @@ int main(int argc, char ** argv) {
         return 3;
     }
 
+	// if openvino enabled
 	if (params.openvino) {
 		// initialize openvino encoder. this has no effect on whisper.cpp builds that don't have OpenVINO configured
 		whisper_ctx_init_openvino_encoder(ctx, nullptr, params.openvino_encode_device.c_str(), nullptr);
 	}
-    if (!params.grammar.empty()) {
-        auto & grammar = params.grammar_parsed;
-        if (is_file_exist(params.grammar.c_str())) {
-            // read grammar from file
-            std::ifstream ifs(params.grammar.c_str());
-            const std::string txt = std::string((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-            grammar = grammar_parser::parse(txt.c_str());
-        } else {
-            // read grammar from string
-            grammar = grammar_parser::parse(params.grammar.c_str());
-        }
-
-        // will be empty (default) if there are parse errors
-        if (grammar.rules.empty()) {
-            fprintf(stderr, "error: failed to parse grammar \"%s\"\n", params.grammar.c_str());
-            return 4;
-        } else {
-            fprintf(stderr, "%s: grammar:\n", __func__);
-            grammar_parser::print_grammar(stderr, grammar);
-            fprintf(stderr, "\n");
-        }
-    }
-
     for (int f = 0; f < (int) params.fname_inp.size(); ++f) {
         const auto fname_inp = params.fname_inp[f];
 		const auto fname_out = f < (int) params.fname_out.size() && !params.fname_out[f].empty() ? params.fname_out[f] : params.fname_inp[f];
@@ -1059,8 +990,7 @@ int main(int argc, char ** argv) {
         {
             whisper_full_params wparams = whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
 
-            const bool use_grammar = (!params.grammar_parsed.rules.empty() && !params.grammar_rule.empty());
-            wparams.strategy = (params.beam_size > 1 || use_grammar) ? WHISPER_SAMPLING_BEAM_SEARCH : WHISPER_SAMPLING_GREEDY;
+            wparams.strategy = params.beam_size > 1 ? WHISPER_SAMPLING_BEAM_SEARCH : WHISPER_SAMPLING_GREEDY;
 
             wparams.print_realtime   = false;
             wparams.print_progress   = params.print_progress;
@@ -1085,8 +1015,6 @@ int main(int argc, char ** argv) {
 
             wparams.tdrz_enable      = params.tinydiarize; // [TDRZ]
 
-            wparams.suppress_regex   = params.suppress_regex.c_str();
-
             wparams.initial_prompt   = params.prompt.c_str();
 
             wparams.greedy.best_of        = params.best_of;
@@ -1099,20 +1027,6 @@ int main(int argc, char ** argv) {
             wparams.no_timestamps    = params.no_timestamps;
 
             whisper_print_user_data user_data = { &params, &pcmf32s, 0 };
-
-            const auto & grammar_parsed = params.grammar_parsed;
-            auto grammar_rules = grammar_parsed.c_rules();
-
-            if (use_grammar) {
-                if (grammar_parsed.symbol_ids.find(params.grammar_rule) == grammar_parsed.symbol_ids.end()) {
-                    fprintf(stderr, "%s: warning: grammar rule '%s' not found - skipping grammar sampling\n", __func__, params.grammar_rule.c_str());
-                } else {
-                    wparams.grammar_rules = grammar_rules.data();
-                    wparams.n_grammar_rules = grammar_rules.size();
-                    wparams.i_start_rule = grammar_parsed.symbol_ids.at(params.grammar_rule);
-                    wparams.grammar_penalty = params.grammar_penalty;
-                }
-            }
 
             // this callback is called on each new segment
             if (!wparams.print_realtime) {
@@ -1212,6 +1126,8 @@ int main(int argc, char ** argv) {
 
     whisper_print_timings(ctx);
     whisper_free(ctx);
+
+	DUMP_MEM();
 
     return 0;
 }

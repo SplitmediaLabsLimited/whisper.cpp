@@ -1,0 +1,9 @@
+EXPORTS
+
+whisper_alloc_context PRIVATE
+whisper_free_context PRIVATE
+whisper_init_context PRIVATE
+whisper_context_reset PRIVATE
+whisper_context_process PRIVATE
+whisper_get_default_params PRIVATE
+whisper_context_get_params PRIVATE

@@ -2712,6 +2712,7 @@ struct ggml_context * ggml_init(struct ggml_init_params params) {
         }
 
 #if defined(GGML_USE_CLBLAST)
+		IF_CLBLAS
         ggml_cl_init();
 #endif
 
@@ -7814,6 +7815,7 @@ static void ggml_compute_forward_add_f32(
     const int nth = params->nth;
 
 #ifdef GGML_USE_CLBLAST
+	IF_CLBLAS
     if (src1->backend == GGML_BACKEND_TYPE_GPU) {
         // TODO: OpenCL kernel support full broadcast
         GGML_ASSERT(ggml_can_repeat_rows(src1, src0));
@@ -8668,6 +8670,7 @@ static void ggml_compute_forward_mul_f32(
     const int nth = params->nth;
 
 #if defined(GGML_USE_CLBLAST)
+	IF_CLBLAS
     if (src1->backend == GGML_BACKEND_TYPE_GPU) {
         // TODO: OpenCL kernel support full broadcast
         GGML_ASSERT(ggml_can_repeat_rows(src1, src0));
@@ -10735,6 +10738,7 @@ static void ggml_compute_forward_mul_mat(
     //   compute by src0 rows
 
 #if defined(GGML_USE_CLBLAST)
+	IF_CLBLAS
     if (ggml_cl_can_mul_mat(src0, src1, dst)) {
         if (params->ith == 0 && params->type == GGML_TASK_TYPE_COMPUTE) {
             ggml_cl_mul_mat(src0, src1, dst, params->wdata, params->wsize);
@@ -18431,7 +18435,7 @@ struct ggml_cplan ggml_graph_plan(const struct ggml_cgraph * cgraph, int n_threa
                     const enum ggml_type vec_dot_type = type_traits[node->src[0]->type].vec_dot_type;
 
 #if defined(GGML_USE_CLBLAST)
-                    if (ggml_cl_can_mul_mat(node->src[0], node->src[1], node)) {
+                    if ((s_ggmlBackendType & GGML_BACKEND_CLBLAST) != 0 && ggml_cl_can_mul_mat(node->src[0], node->src[1], node)) {
                         cur = ggml_cl_mul_mat_get_wsize(node->src[0], node->src[1], node);
                     } else
 #endif

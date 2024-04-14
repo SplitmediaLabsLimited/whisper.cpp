@@ -1,5 +1,7 @@
 #pragma once
 
+#include "external/base.h"
+
 //
 // GGML Tensor Library
 //

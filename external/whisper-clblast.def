@@ -1,0 +1,11 @@
+EXPORTS
+
+ggml_cl_init PRIVATE
+ggml_cl_mul PRIVATE
+ggml_cl_can_mul_mat PRIVATE
+ggml_cl_mul_mat_get_wsize PRIVATE
+ggml_cl_mul_mat PRIVATE
+ggml_cl_free_data PRIVATE
+ggml_cl_transform_tensor PRIVATE
+ggml_backend_opencl_buffer_type PRIVATE
+ggml_cl_add PRIVATE
