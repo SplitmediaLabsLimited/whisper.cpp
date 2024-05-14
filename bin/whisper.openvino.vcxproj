@@ -75,7 +75,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2023\runtime\include;..\ThirdParty\openvino_2023\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2024\runtime\include;..\ThirdParty\openvino_2024\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -108,7 +108,7 @@
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
     </Lib>
     <Link>
-      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2023\runtime\lib\intel64\Debug\openvinod.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2024\runtime\lib\intel64\Debug\openvinod.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>..\external\whisper-openvino-encoder.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(OutDir)..\..\..\Lib\$(Configuration)\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -118,7 +118,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2023\runtime\include;..\ThirdParty\openvino_2023\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2024\runtime\include;..\ThirdParty\openvino_2024\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /utf-8 /utf-8</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -153,12 +153,12 @@
     <Link>
       <ModuleDefinitionFile>..\external\whisper-openvino-encoder.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(OutDir)..\..\..\Lib\$(Configuration)\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2023\runtime\lib\intel64\Release\openvino.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2024\runtime\lib\intel64\Release\openvino.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2023\runtime\include;..\ThirdParty\openvino_2023\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2024\runtime\include;..\ThirdParty\openvino_2024\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
@@ -193,12 +193,12 @@
     <Link>
       <ModuleDefinitionFile>..\external\whisper-openvino-encoder.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(OutDir)..\..\..\Lib\$(Configuration)\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2023\runtime\lib\intel64\Release\openvino.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2024\runtime\lib\intel64\Release\openvino.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2023\runtime\include;..\ThirdParty\openvino_2023\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\;..\ThirdParty\openvino_2024\runtime\include;..\ThirdParty\openvino_2024\runtime\include\ie;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>%(AdditionalOptions) /utf-8</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -232,7 +232,7 @@
     <Link>
       <ModuleDefinitionFile>..\external\whisper-openvino-encoder.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(OutDir)..\..\..\Lib\$(Configuration)\$(PlatformTarget)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2023\runtime\lib\intel64\Release\openvino.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>whisper.lib;..\ThirdParty\openvino_2024\runtime\lib\intel64\Release\openvino.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

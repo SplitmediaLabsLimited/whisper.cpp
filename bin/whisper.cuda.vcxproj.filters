@@ -4,9 +4,6 @@
     <CudaCompile Include="..\ggml-cuda\acc.cu">
       <Filter>ggml-cuda</Filter>
     </CudaCompile>
-    <CudaCompile Include="..\ggml-cuda\alibi.cu">
-      <Filter>ggml-cuda</Filter>
-    </CudaCompile>
     <CudaCompile Include="..\ggml-cuda\arange.cu">
       <Filter>ggml-cuda</Filter>
     </CudaCompile>
@@ -82,6 +79,9 @@
     <CudaCompile Include="..\ggml-cuda\upscale.cu">
       <Filter>ggml-cuda</Filter>
     </CudaCompile>
+    <CudaCompile Include="..\ggml-cuda\fattn.cu">
+      <Filter>ggml-cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\external\whisper.clblast.cpp" />
@@ -92,9 +92,6 @@
       <Filter>ggml-cuda</Filter>
     </ClInclude>
     <ClInclude Include="..\ggml-cuda\acc.cuh">
-      <Filter>ggml-cuda</Filter>
-    </ClInclude>
-    <ClInclude Include="..\ggml-cuda\alibi.cuh">
       <Filter>ggml-cuda</Filter>
     </ClInclude>
     <ClInclude Include="..\ggml-cuda\arange.cuh">
@@ -176,6 +173,9 @@
       <Filter>ggml-cuda</Filter>
     </ClInclude>
     <ClInclude Include="..\ggml-cuda\upscale.cuh">
+      <Filter>ggml-cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ggml-cuda\fattn.cuh">
       <Filter>ggml-cuda</Filter>
     </ClInclude>
   </ItemGroup>

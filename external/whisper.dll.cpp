@@ -19,7 +19,7 @@ struct whisper_dll_context_t {
 	// model path
 	char	model_path[512];
 	// output text buffer
-	struct {
+	struct { 
 		void * p;
 		size_t size;
 	} text_buf;

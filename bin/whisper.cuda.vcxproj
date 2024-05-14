@@ -278,7 +278,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="..\ggml-cuda\acc.cuh" />
-    <ClInclude Include="..\ggml-cuda\alibi.cuh" />
     <ClInclude Include="..\ggml-cuda\arange.cuh" />
     <ClInclude Include="..\ggml-cuda\argsort.cuh" />
     <ClInclude Include="..\ggml-cuda\binbcast.cuh" />
@@ -290,6 +289,7 @@
     <ClInclude Include="..\ggml-cuda\dequantize.cuh" />
     <ClInclude Include="..\ggml-cuda\diagmask.cuh" />
     <ClInclude Include="..\ggml-cuda\dmmv.cuh" />
+    <ClInclude Include="..\ggml-cuda\fattn.cuh" />
     <ClInclude Include="..\ggml-cuda\getrows.cuh" />
     <ClInclude Include="..\ggml-cuda\im2col.cuh" />
     <ClInclude Include="..\ggml-cuda\mmq.cuh" />
@@ -310,7 +310,6 @@
   <ItemGroup>
     <CudaCompile Include="..\ggml-cuda.cu" />
     <CudaCompile Include="..\ggml-cuda\acc.cu" />
-    <CudaCompile Include="..\ggml-cuda\alibi.cu" />
     <CudaCompile Include="..\ggml-cuda\arange.cu" />
     <CudaCompile Include="..\ggml-cuda\argsort.cu" />
     <CudaCompile Include="..\ggml-cuda\binbcast.cu" />
@@ -320,6 +319,7 @@
     <CudaCompile Include="..\ggml-cuda\cpy.cu" />
     <CudaCompile Include="..\ggml-cuda\diagmask.cu" />
     <CudaCompile Include="..\ggml-cuda\dmmv.cu" />
+    <CudaCompile Include="..\ggml-cuda\fattn.cu" />
     <CudaCompile Include="..\ggml-cuda\getrows.cu" />
     <CudaCompile Include="..\ggml-cuda\im2col.cu" />
     <CudaCompile Include="..\ggml-cuda\mmq.cu" />
