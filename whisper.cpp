@@ -41,6 +41,7 @@
 #include <regex>
 #include <random>
 #include <functional>
+#include <codecvt>
 
 #if defined(_MSC_VER)
 #pragma warning(disable: 4244 4267) // possible loss of data
@@ -147,7 +148,6 @@ static void whisper_log_callback_default(ggml_log_level level, const char * text
         } \
     } while (0)
 
-//#define WHISPER_USE_FLASH_ATTN
 //#define WHISPER_USE_FLASH_FF
 #define WHISPER_MAX_DECODERS 8
 #define WHISPER_MAX_NODES 4096
@@ -1952,32 +1952,6 @@ static struct ggml_cgraph * whisper_build_graph_encoder(
 
             // ------
 
-#ifdef WHISPER_USE_FLASH_ATTN
-            struct ggml_tensor * Q =
-                ggml_permute(ctx0,
-                        ggml_cpy(ctx0,
-                            Qcur,
-                            ggml_new_tensor_3d(ctx0, wctx.itype, n_state/n_head, n_head, n_ctx)),
-                        0, 2, 1, 3);
-
-            struct ggml_tensor * K =
-                ggml_permute(ctx0,
-                        ggml_cpy(ctx0,
-                            Kcur,
-                            ggml_new_tensor_3d(ctx0, wctx.itype, n_state/n_head, n_head, n_ctx)),
-                        0, 2, 1, 3);
-
-            struct ggml_tensor * V =
-                ggml_cpy(ctx0,
-                        ggml_permute(ctx0,
-                            ggml_reshape_3d(ctx0,
-                                Vcur,
-                                n_state/n_head, n_head, n_ctx),
-                            1, 2, 0, 3),
-                        ggml_new_tensor_3d(ctx0, wctx.itype, n_ctx, n_state/n_head, n_head));
-
-            struct ggml_tensor * KQV = ggml_flash_attn(ctx0, Q, K, V, false);
-#else
             struct ggml_tensor * Q =
                 ggml_permute(ctx0,
                         ggml_cpy(ctx0,
@@ -1995,9 +1969,7 @@ static struct ggml_cgraph * whisper_build_graph_encoder(
             // K * Q
             struct ggml_tensor * KQ = ggml_mul_mat(ctx0, K, Q);
 
-            struct ggml_tensor * KQ_scaled = ggml_scale(ctx0, KQ, KQscale);
-
-            struct ggml_tensor * KQ_soft_max = ggml_soft_max(ctx0, KQ_scaled);
+            struct ggml_tensor * KQ_soft_max = ggml_soft_max_ext(ctx0, KQ, nullptr, KQscale, 0.0f);
 
             struct ggml_tensor * V =
                 ggml_cpy(ctx0,
@@ -2010,7 +1982,7 @@ static struct ggml_cgraph * whisper_build_graph_encoder(
                         );
 
             struct ggml_tensor * KQV = ggml_mul_mat(ctx0, V, KQ_soft_max);
-#endif
+
             struct ggml_tensor * KQV_merged = ggml_permute(ctx0, KQV, 0, 2, 1, 3);
 
             cur = ggml_cpy(ctx0,
@@ -2407,12 +2379,7 @@ static struct ggml_cgraph * whisper_build_graph_decoder(
             // K * Q
             struct ggml_tensor * KQ = ggml_mul_mat(ctx0, K, Q);
 
-            //struct ggml_tensor * KQ_scaled = ggml_scale(ctx0, KQ, KQ_scale);
-
-            //struct ggml_tensor * KQ_masked = ggml_diag_mask_inf(ctx0, KQ, n_past);
-            struct ggml_tensor * KQ_masked = ggml_add(ctx0, KQ, KQ_mask);
-
-            struct ggml_tensor * KQ_soft_max = ggml_soft_max(ctx0, KQ_masked);
+            struct ggml_tensor * KQ_soft_max = ggml_soft_max_ext(ctx0, KQ, KQ_mask, 1.0f, 0.0f);
 
             struct ggml_tensor * V =
                 ggml_view_3d(ctx0, kv_self.v,
@@ -2901,10 +2868,12 @@ static void log_mel_spectrogram_worker_thread(int ith, const std::vector<float> 
                                               int n_samples, int frame_size, int frame_step, int n_threads,
                                               const whisper_filters & filters, whisper_mel & mel) {
     std::vector<float> fft_in(frame_size, 0.0);
-    std::vector<float> fft_out(2 * frame_step);
-    // make sure n_fft == 1 + (WHISPER_N_FFT / 2), bin_0 to bin_nyquist
-    int n_fft = 1 + (frame_size / 2);
+    std::vector<float> fft_out(2 * frame_size);
+    int n_fft = filters.n_fft;
     int i = ith;
+
+    // make sure n_fft == 1 + (WHISPER_N_FFT / 2), bin_0 to bin_nyquist
+    assert(n_fft == 1 + (frame_size / 2));
 
     // calculate FFT only when fft_in are not all zero
     for (; i < std::min(n_samples / frame_step + 1, mel.n_len); i += n_threads) {
@@ -2924,7 +2893,7 @@ static void log_mel_spectrogram_worker_thread(int ith, const std::vector<float> 
 
         // Calculate modulus^2 of complex numbers
         // Use pow(fft_out[2 * j + 0], 2) + pow(fft_out[2 * j + 1], 2) causes inference quality problem? Interesting.
-        for (int j = 0; j < frame_size; j++) {
+        for (int j = 0; j < n_fft; j++) {
             fft_out[j] = (fft_out[2 * j + 0] * fft_out[2 * j + 0] + fft_out[2 * j + 1] * fft_out[2 * j + 1]);
         }
 
@@ -3395,8 +3364,14 @@ struct whisper_context_params whisper_context_default_params() {
 
 struct whisper_context * whisper_init_from_file_with_params_no_state(const char * path_model, struct whisper_context_params params) {
     WHISPER_LOG_INFO("%s: loading model from '%s'\n", __func__, path_model);
-
+#ifdef _MSC_VER
+    // Convert UTF-8 path to wide string (UTF-16) for Windows, resolving character encoding issues.
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    std::wstring path_model_wide = converter.from_bytes(path_model);
+    auto fin = std::ifstream(path_model_wide, std::ios::binary);
+#else
     auto fin = std::ifstream(path_model, std::ios::binary);
+#endif
     if (!fin) {
         WHISPER_LOG_ERROR("%s: failed to open '%s'\n", __func__, path_model);
         return nullptr;
@@ -5273,7 +5248,7 @@ int whisper_full_with_state(
     // basically don't process anything that is less than 1.0s
     // see issue #39: https://github.com/ggerganov/whisper.cpp/issues/39
     if (seek_end < seek_start + (params.speed_up ? 50 : 100)) {
-        WHISPER_LOG_DEBUG("%s: input is too short - %d ms < 1000 ms\n", __func__, (seek_end - seek_start)*10);
+        WHISPER_LOG_WARN("%s: input is too short - %d ms < 1000 ms. consider padding the input audio with silence\n", __func__, (seek_end - seek_start)*10);
         return 0;
     }
 
